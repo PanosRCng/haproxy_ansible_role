@@ -1,0 +1,19 @@
+---
+
+
+- name: Copy Stack | Create docker stack directory
+  file:
+    state: directory
+    path: "{{ haproxy_docker_stack_directory }}"
+    owner: "{{ docker_user }}"
+    group: "{{ docker_user }}"
+    mode: '0700'
+
+
+- name: Copy Stack | Copy docker stack
+  copy:
+    src: files/docker_stack/
+    dest: "{{ haproxy_docker_stack_directory }}"
+    owner: "{{ docker_user }}"
+    group: "{{ docker_user }}"
+    mode: '0700'

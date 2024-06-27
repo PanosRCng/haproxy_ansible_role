@@ -1,0 +1,13 @@
+---
+
+
+- name: Run renew cert | run renew certbot certificate
+  ansible.builtin.shell: ./renew_cert.sh
+  args:
+    chdir: "{{ haproxy_docker_stack_directory }}"
+  register: results
+
+
+- name: Run renew cert | show output
+  debug:
+      msg: "{{ results }}"

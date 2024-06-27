@@ -1,0 +1,75 @@
+
+global
+  #log stdout format raw daemon debug
+
+defaults
+  log global
+  mode http
+  option httplog
+  option 	forwardfor
+  option 	http-server-close
+  timeout client 10s
+  timeout connect 5s
+  timeout server 10s 
+  timeout http-request 10s
+
+
+
+frontend stats
+    mode http
+    bind *:{{ haproxy_stats_port }}
+    stats enable
+    stats uri /
+    stats refresh 30s
+
+
+
+frontend frontend_http
+
+  bind *:{{ haproxy_http_port }}
+
+  {{ haproxy_http_acls }}
+
+  acl is_letsencrypt path_beg -i /.well-known/
+
+  http-request redirect scheme https code 301 if {{ haproxy_http_redirects }} !is_letsencrypt !{ ssl_fc }
+
+  {{ haproxy_http_use_backends }}
+
+  use_backend letsencrypt if is_letsencrypt
+
+  default_backend no_match
+
+
+
+frontend frontend_https
+
+  bind *:{{ haproxy_https_port }} ssl crt-list /usr/local/etc/certs/crt-list.txt
+
+  {{ haproxy_https_acls }}
+
+  http-response set-header Content-Security-Policy upgrade-insecure-requests
+  http-response set-header Strict-Transport-Security "max-age=16000000; includeSubDomains; preload;"
+
+  {{ haproxy_https_use_backends }}
+
+  default_backend no_match
+
+
+
+
+backend letsencrypt
+  server letsencrypt nginx_certbot:80 check
+
+
+{{ haproxy_http_backends }}
+
+
+
+{{ haproxy_https_backends }}
+
+
+
+backend no_match
+  mode http
+  http-request deny deny_status 400

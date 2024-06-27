@@ -1,0 +1,33 @@
+---
+
+
+- name: Copy docker stack files
+  include_tasks: copy_stack.yml
+
+
+- name: Copy env file
+  include_tasks: copy_env.yml
+
+
+- name: Get facts
+  include_tasks: get_facts.yml
+
+
+- name: Copy cfg file
+  include_tasks: copy_haproxy_cfg.yml
+
+
+- name: Create self-signed cert
+  include_tasks: create_self_signed_cert.yml
+
+
+- name: Deploy haproxy
+  include_tasks: deploy_haproxy.yml
+
+
+- name: Create renew cert cron job
+  include_tasks: create_renew_cert_cron_job.yml
+
+
+- name: Run renew cert
+  include_tasks: run_renew_cert.yml

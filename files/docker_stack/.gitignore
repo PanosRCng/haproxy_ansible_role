@@ -1,0 +1,6 @@
+stack_data/certbot_data/letsencrypt
+stack_data/certbot_data/logs
+stack_data/certbot_data/webroot
+stack_data/haproxy_data/certs
+stack_data/haproxy_data/cfg/haproxy.cfg
+env

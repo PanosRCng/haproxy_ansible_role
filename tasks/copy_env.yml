@@ -1,0 +1,9 @@
+---
+
+- name: Copy Env | Copy template env file
+  template:
+    src: templates/env.j2
+    dest: "{{ haproxy_docker_stack_directory }}/env"
+    owner: "{{ docker_user }}"
+    group: "{{ docker_user }}"
+    mode: '0600'

@@ -1,0 +1,12 @@
+---
+
+
+- name: Create renew cert cron job | create certbot renew cert cron job
+  ansible.builtin.cron:
+    name: "haproxy certbot renew cert"
+    minute: "0"
+    hour: "*/12"
+    day: "*"
+    month: "*"
+    weekday: "*"
+    job: "cd {{ haproxy_docker_stack_directory }} && ./renew_cert.sh >/dev/null 2>&1"

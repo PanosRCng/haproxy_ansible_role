@@ -1,0 +1,36 @@
+---
+
+
+- name: Deploy haproxy | tear down existing docker stack services
+  community.docker.docker_compose_v2:
+    project_src: "{{ haproxy_docker_stack_directory }}"
+    files: 
+      - haproxy.yml
+    env_files: 
+      - env
+    state: absent
+    services:
+      - haproxy
+      - nginx_certbot
+
+
+- name: Deploy haproxy | deploy docker compose stack services
+  community.docker.docker_compose_v2:
+    project_src: "{{ haproxy_docker_stack_directory }}"
+    files: 
+      - haproxy.yml
+    env_files: 
+      - env
+    services:
+      - haproxy
+      - nginx_certbot
+  register: output
+
+
+- name: Deploy haproxy | verify that services are running
+  ansible.builtin.assert:
+    that:
+      - "output.containers[0].State == 'running'"
+      - "output.containers[1].State == 'running'"
+    fail_msg: "containers could not start"
+    success_msg: "containers started"

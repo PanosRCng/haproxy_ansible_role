@@ -1,0 +1,17 @@
+NETWORK_SUBNET=172.17.1.0/24
+NETWORK_GATEWAY=172.17.1.1
+
+HAPROXY_HTTP_PORT=80
+HAPROXY_HTTPS_PORT=443
+HAPROXY_STATS_PORT=8404
+
+CERTBOT_DOMAIN=sub1.example.com,sub2.example.com
+CERTBOT_EMAIL=example@my_email.com
+#CERTBOT_OPTIONS=--staging
+
+HAPROXY_CFG_VOLUME_PATH=./stack_data/haproxy_data/cfg/
+HAPROXY_CERTS_VOLUME_PATH=./stack_data/haproxy_data/certs/
+
+CERTBOT_LETSENCRYPT_VOLUME_PATH=./stack_data/certbot_data/letsencrypt/
+CERTBOT_MANAGE_SCRIPT_PATH=./stack_data/certbot_data/scripts/manage_cert.sh
+CERTBOT_WEBROOT_VOLUME_PATH=./stack_data/certbot_data/webroot/

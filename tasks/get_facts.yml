@@ -1,0 +1,148 @@
+---
+
+
+- name: Get Facts | set fact haproxy_http_acls_list
+  set_fact:
+    haproxy_http_acls_list: "{{ haproxy_http_acls_list|default([]) +
+      [
+        'acl is_' + item.name + ' hdr(host) -i ' + item.url_path
+      ]
+    }}"
+  loop: "{{ http_backends }}"
+
+
+- name: Get Facts | set fact haproxy_http_acls
+  set_fact:
+    haproxy_http_acls: "{{ haproxy_http_acls_list | join('\n  ') }}"
+
+
+- name: Get Facts | show haproxy_http_acls
+  debug:
+      msg: "{{ haproxy_http_acls }}"
+
+
+
+- name: Get Facts | set fact haproxy_http_redirects_list
+  set_fact:
+    haproxy_http_redirects_list: "{{ haproxy_http_redirects_list|default([]) +
+      [
+        '!is_' + item.name
+      ]
+    }}"
+  loop: "{{ http_backends }}"
+
+
+- name: Get Facts | set fact haproxy_http_redirects
+  set_fact:
+    haproxy_http_redirects: "{{ haproxy_http_redirects_list | join(' ') }}"
+
+
+- name: Get Facts | haproxy_http_redirects
+  debug:
+      msg: "{{ haproxy_http_redirects }}"
+
+
+
+- name: Get Facts | set fact haproxy_http_use_backends_list
+  set_fact:
+    haproxy_http_use_backends_list: "{{ haproxy_http_use_backends_list|default([]) +
+      [
+        'use_backend ' +  item.name + ' if is_' + item.name
+      ]
+    }}"
+  loop: "{{ http_backends }}"
+
+
+- name: Get Facts | set fact haproxy_http_use_backends
+  set_fact:
+    haproxy_http_use_backends: "{{ haproxy_http_use_backends_list | join('\n  ') }}"
+
+
+- name: Get Facts | show haproxy_http_use_backends
+  debug:
+      msg: "{{ haproxy_http_use_backends }}"
+
+
+
+- name: Get Facts | set fact haproxy_http_backends_list
+  set_fact:
+    haproxy_http_backends_list: "{{ haproxy_http_backends_list|default([]) +
+      [
+        'backend ' +  item.name + '\n  ' + item.servers
+      ]
+    }}"
+  loop: "{{ http_backends }}"
+
+
+- name: Get Facts | set fact haproxy_http_backends
+  set_fact:
+    haproxy_http_backends: "{{ haproxy_http_backends_list | join('\n\n') }}"
+
+
+- name: Get Facts | show haproxy_http_backends
+  debug:
+      msg: "{{ haproxy_http_backends }}"
+
+
+
+- name: Get Facts | set fact haproxy_https_acls_list
+  set_fact:
+    haproxy_https_acls_list: "{{ haproxy_https_acls_list|default([]) +
+      [
+        'acl is_' + item.name + ' hdr(host) -i ' + item.url_path
+      ]
+    }}"
+  loop: "{{ https_backends }}"
+
+
+- name: Get Facts | set fact haproxy_https_acls
+  set_fact:
+    haproxy_https_acls: "{{ haproxy_https_acls_list | join('\n  ') }}"
+
+
+- name: Get Facts | show haproxy_https_acls
+  debug:
+      msg: "{{ haproxy_https_acls }}"
+
+
+
+- name: Get Facts | set fact haproxy_https_use_backends_list
+  set_fact:
+    haproxy_https_use_backends_list: "{{ haproxy_https_use_backends_list|default([]) +
+      [
+        'use_backend ' +  item.name + ' if is_' + item.name
+      ]
+    }}"
+  loop: "{{ https_backends }}"
+
+
+- name: Get Facts | set fact haproxy_https_use_backends
+  set_fact:
+    haproxy_https_use_backends: "{{ haproxy_https_use_backends_list | join('\n  ') }}"
+
+
+- name: Get Facts | show haproxy_https_use_backends
+  debug:
+      msg: "{{ haproxy_https_use_backends }}"
+
+
+
+- name: Get Facts | set fact haproxy_https_backends_list
+  set_fact:
+    haproxy_https_backends_list: "{{ haproxy_https_backends_list|default([]) +
+      [
+        'backend ' +  item.name + '\n  http-request set-header X-Client-IP %[src]\n  http-request add-header X-Forwarded-Proto https if { ssl_fc }\n  ' + item.servers
+      ]
+    }}"
+  loop: "{{ https_backends }}"
+
+
+- name: Get Facts | set fact haproxy_http_backends
+  set_fact:
+    haproxy_https_backends: "{{ haproxy_https_backends_list | join('\n\n') }}"
+
+
+- name: Get Facts | show haproxy_https_backends
+  debug:
+      msg: "{{ haproxy_https_backends }}"
+

@@ -1,0 +1,80 @@
+
+global
+  #log stdout format raw daemon debug
+
+defaults
+  log global
+  mode http
+  option httplog
+  option 	forwardfor
+  option 	http-server-close
+  timeout client 10s
+  timeout connect 5s
+  timeout server 10s 
+  timeout http-request 10s
+
+
+
+frontend stats
+    mode http
+    bind *:8404
+    stats enable
+    stats uri /
+    stats refresh 30s
+
+
+
+frontend frontend_http
+
+  bind *:80
+
+  acl is_haproxy hdr(host) -i haproxy.example.lan
+
+  acl is_letsencrypt path_beg -i /.well-known/
+
+  http-request redirect scheme https code 301 if !is_haproxy !is_letsencrypt !{ ssl_fc }
+
+  use_backend haproxy if is_haproxy
+
+  use_backend letsencrypt if is_letsencrypt
+
+  default_backend no_match
+
+
+
+frontend frontend_https
+
+  bind *:443 ssl crt-list /usr/local/etc/certs/crt-list.txt
+
+  acl is_ssl_haproxy hdr(host) -i ssl_haproxy.example.lan
+
+  http-response set-header Content-Security-Policy upgrade-insecure-requests
+  http-response set-header Strict-Transport-Security "max-age=16000000; includeSubDomains; preload;"
+
+  use_backend ssl_haproxy if is_ssl_haproxy
+
+  default_backend no_match
+
+
+
+
+backend letsencrypt
+  server letsencrypt nginx_certbot:80 check
+
+
+backend haproxy
+  server server1 172.17.0.1:8404 check
+
+
+
+backend ssl_haproxy
+  http-request set-header X-Client-IP %[src]
+  http-request add-header X-Forwarded-Proto https if { ssl_fc }
+  server server1 172.17.0.1:8404 check
+
+
+
+
+backend no_match
+  mode http
+  http-request deny deny_status 400

@@ -1,0 +1,41 @@
+---
+
+ansible_user: default_ansible_user
+
+docker_user: default_docker_user
+
+haproxy_docker_stack_directory: "/home/default/docker_stacks/haproxy_docker_stack"
+
+
+haproxy_network_subnet: "172.17.0.0/24"
+haproxy_network_gateway: "172.17.0.1"
+
+haproxy_http_port: 80
+haproxy_https_port: 443
+haproxy_stats_port: 8404
+
+certbot_domain: "sub1.example.com,sub2.example.com"
+certbot_email: "example@my_email.com"
+#certbot_options: "--staging"
+certbot_options: ""
+
+http_backends:
+  - {
+      name: "haproxy",
+      url_path: "haproxy.example.lan",
+      servers: "server server1 172.17.0.1:8404 check\n  server server2 172.17.0.1:8404 check"
+    }
+
+https_backends:
+  - {
+      name: "ssl_haproxy",
+      url_path: "ssl_haproxy.example.lan",
+      servers: "server server1 172.17.0.1:8404 check"
+    }
+
+haproxy_cfg_directory: "{{ haproxy_docker_stack_directory }}/stack_data/haproxy_data/cfg/"
+haproxy_certs_directory: "{{ haproxy_docker_stack_directory }}/stack_data/haproxy_data/certs/"
+
+certbot_letsencrypt_directory: "{{ haproxy_docker_stack_directory }}/stack_data/certbot_data/letsencrypt/"
+certbot_manage_cert_script_path: "{{ haproxy_docker_stack_directory }}/stack_data/certbot_data/scripts/manage_cert.sh"
+certbot_webroot_directory: "{{ haproxy_docker_stack_directory }}/stack_data/certbot_data/webroot/"

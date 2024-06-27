@@ -1,0 +1,7 @@
+---
+
+
+- name: Create self-signed cert | create openssl certificate
+  ansible.builtin.shell: make create_self_signed_cert
+  args:
+    chdir: "{{ haproxy_docker_stack_directory }}"

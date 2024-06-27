@@ -1,0 +1,9 @@
+---
+
+- name: Copy Haproxy Cfg | Copy template haproxy.cfg file
+  template:
+    src: templates/haproxy.cfg.j2
+    dest: "{{ haproxy_cfg_directory }}/haproxy.cfg"
+    owner: "{{ docker_user }}"
+    group: "{{ docker_user }}"
+    mode: '0644'
